@@ -7,7 +7,7 @@ class AutoBuilderProcessorProvider : SymbolProcessorProvider {
         return AutoBuilderProcessor(
             environment.codeGenerator,
             environment.logger,
-            PropertyReader(environment.logger)
+            PropertyReaderImpl(environment.logger)
         )
     }
 }
