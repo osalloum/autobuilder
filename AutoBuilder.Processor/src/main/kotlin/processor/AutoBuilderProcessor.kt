@@ -94,7 +94,7 @@ class AutoBuilderProcessor(
                 qualifiedAnnotation("DefaultChar") -> return default(annotation, property, resolver.builtIns.charType) { "'$it'" }
                 qualifiedAnnotation("DefaultByte") -> return default(annotation, property, resolver.builtIns.byteType)
                 qualifiedAnnotation("DefaultShort") -> return default(annotation, property, resolver.builtIns.shortType)
-                qualifiedAnnotation("DefaultString") -> return default(annotation, property, resolver.builtIns.stringType)
+                qualifiedAnnotation("DefaultString") -> return default(annotation, property, resolver.builtIns.stringType) { "\"$it\""}
             }
         }
         return if (property.isNullable()) {
@@ -130,5 +130,5 @@ class AutoBuilderProcessor(
         return transform(annotation.arguments.first().value.toString())
     }
 
-    private fun qualifiedAnnotation(name: String): String = "io.github.mattshoe.shoebox.autobuilder.annotations.AutoBuilder.$name"
+    private fun qualifiedAnnotation(name: String): String = "io.github.mattshoe.shoebox.autobuilder.annotations.$name"
 }

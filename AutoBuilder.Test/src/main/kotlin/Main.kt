@@ -8,11 +8,11 @@ import io.github.mattshoe.shoebox.autobuilder.autobuilder.FlerpyDooBuilder
 data class FlerpyDoo(
     @DefaultInt(45)
     val int: Int,
-    @DefaultLong(0)
+    @DefaultLong(543)
     val long: Long,
-    @DefaultFloat(0f)
+    @DefaultFloat(9020f)
     val float: Float,
-    @DefaultDouble(0.0)
+    @DefaultDouble(04545.0)
     val double: Double,
     @DefaultBoolean(true)
     val boolean: Boolean,
@@ -29,5 +29,6 @@ data class FlerpyDoo(
 
 
 fun main() {
-    println(FlerpyDooBuilder().build().toString())
+    val flerp = FlerpyDooBuilder().build()
+    println(flerp.toString())
 }
