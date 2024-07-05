@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-//    ksp(project(":AutoBuilder.Processor"))
+    ksp(project(":AutoBuilder.Processor"))
     implementation(project(":AutoBuilder.Annotations"))
     testImplementation(kotlin("test"))
 }

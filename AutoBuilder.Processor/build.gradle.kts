@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm")
     id("maven-publish")
-    alias(libs.plugins.ksp)
 }
 
 val GROUP_ID: String = project.properties["group.id"].toString()
@@ -17,11 +16,11 @@ repositories {
 }
 
 dependencies {
-    ksp("com.google.devtools.ksp:symbol-processing-api:1.9.23-1.0.19")
     implementation(project(":AutoBuilder.Annotations"))
     implementation(kotlin("stdlib"))
     implementation("com.squareup:kotlinpoet:1.17.0")
     implementation("com.squareup:kotlinpoet-ksp:1.17.0")
+    implementation("com.google.devtools.ksp:symbol-processing-api:2.0.0-1.0.21")
 
     testImplementation(kotlin("test"))
 }
