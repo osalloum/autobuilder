@@ -6,7 +6,7 @@ import io.github.mattshoe.shoebox.autobuilder.autobuilder.FlerpyDooBuilder
 
 @AutoBuilder
 data class FlerpyDoo(
-    @DefaultInt(45)
+    @DefaultInt(41)
     val int: Int,
     @DefaultLong(543)
     val long: Long,
