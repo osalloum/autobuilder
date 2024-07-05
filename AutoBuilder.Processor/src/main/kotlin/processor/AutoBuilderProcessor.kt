@@ -16,12 +16,13 @@ class AutoBuilderProcessor(
         val symbols = resolver.getSymbolsWithAnnotation(AutoBuilder::class.qualifiedName!!)
         symbols.filterIsInstance<KSClassDeclaration>().forEach { classDeclaration ->
             generateBuilderClass(classDeclaration, resolver)
+            generateExtensionFunction(classDeclaration)
         }
         return emptyList()
     }
 
     private fun generateBuilderClass(classDeclaration: KSClassDeclaration, resolver: Resolver) {
-        val packageName = "${classDeclaration.packageName.asString()}.autobuilder"
+        val packageName = packageDestination(classDeclaration)
         val className = classDeclaration.simpleName.asString()
         val builderClassName = "${className}Builder"
 
@@ -34,11 +35,12 @@ class AutoBuilderProcessor(
                 val paramList = mutableListOf<String>()
 
                 classDeclaration.getAllProperties().forEach { property ->
-                    val defaultValue = propertyReader.getDefaultValue(property, resolver)
                     addProperty(
                         PropertySpec.builder(property.simpleName.asString(), property.type.toTypeName().copy(nullable = property.isNullable))
                             .mutable(true)
-                            .initializer(defaultValue)
+                            .initializer(
+                                propertyReader.getDefaultValue(property, resolver)
+                            )
                             .addModifiers(KModifier.PRIVATE)
                             .build()
                     )
@@ -84,6 +86,37 @@ class AutoBuilderProcessor(
             fileSpec.writeTo(it)
         }
     }
+
+    private fun generateExtensionFunction(classDeclaration: KSClassDeclaration) {
+        val packageName = packageDestination(classDeclaration)
+        val className = classDeclaration.simpleName.asString()
+        val builderClassName = "${className}Builder"
+        val classType = ClassName(packageName, className)
+        val builderType = ClassName(packageName, builderClassName)
+
+        val functionSpec = FunSpec.builder("builder")
+            .receiver(classType)
+            .returns(builderType)
+            .addStatement("return %T()", builderType)
+            .build()
+
+        val fileSpec = FileSpec.builder(packageName, "BuilderExtensions")
+            .addFunction(functionSpec)
+            .addImport(packageName = classDeclaration.packageName.asString(), className)
+            .build()
+
+        val file = codeGenerator.createNewFile(
+            Dependencies(false, classDeclaration.containingFile!!),
+            packageName,
+            "BuilderExtensions"
+        )
+
+        file.bufferedWriter().use {
+            fileSpec.writeTo(it)
+        }
+    }
+
+    private fun packageDestination(classDeclaration: KSClassDeclaration) = "${classDeclaration.packageName.asString()}.autobuilder"
 
 
 }
