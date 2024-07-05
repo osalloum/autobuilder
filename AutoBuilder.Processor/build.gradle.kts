@@ -1,5 +1,7 @@
 plugins {
     kotlin("jvm")
+    id("maven-publish")
+    alias(libs.plugins.ksp)
 }
 
 group = "io.github.mattshoe.shoebox.autobuilder"
