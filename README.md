@@ -11,7 +11,8 @@
 
 ## Known Limitations
 
-- Default values specified in the constructor are not currently supported due to KSP limitations. This feature will be implemented once support is available.
+- Defaulted constructor values are not currently respected due to KSP limitations. 
+  - This feature will be implemented once KSP support is available.
 
 <br>
 
