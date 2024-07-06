@@ -1,4 +1,4 @@
-package io.github.mattshoe.shoebox.autobuilder.processor.generator
+package io.github.mattshoe.shoebox.autobuilder.processor.generator.builderclass
 
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -8,16 +8,18 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
 import io.github.mattshoe.shoebox.autobuilder.processor.defaults.DefaultProvider
+import io.github.mattshoe.shoebox.autobuilder.processor.generator.function.FunctionCodeGenerator
+import io.github.mattshoe.shoebox.autobuilder.processor.generator.property.PropertyCodeGenerator
 import io.github.mattshoe.shoebox.autobuilder.processor.isNullable
 import io.github.mattshoe.shoebox.autobuilder.processor.model.GeneratedBuilderFile
 import io.github.mattshoe.shoebox.autobuilder.processor.model.ImportStatement
 
-class BuilderClassCodeGenerator(
+class BuilderClassCodeGeneratorImpl(
     private val defaultProvider: DefaultProvider,
     private val propertyCodeGenerator: PropertyCodeGenerator,
     private val functionCodeGenerator: FunctionCodeGenerator
-) {
-    fun generateBuilderCodeFor(classDeclaration: KSClassDeclaration, resolver: Resolver): GeneratedBuilderFile {
+) : BuilderClassCodeGenerator {
+    override fun generateBuilderCodeFor(classDeclaration: KSClassDeclaration, resolver: Resolver): GeneratedBuilderFile {
         val packageDestination = packageDestination(classDeclaration)
         val classBeingBuilt = classDeclaration.simpleName.asString()
         val builderClassName = "${classBeingBuilt}Builder"
@@ -128,7 +130,7 @@ class BuilderClassCodeGenerator(
         builderClassName: String
     ) {
         addFunction(
-            functionCodeGenerator.generatePropertyMutator(
+            functionCodeGenerator.generatePropertyMutatorFunction(
                 property,
                 packageDestination,
                 builderClassName

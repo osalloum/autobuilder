@@ -1,4 +1,4 @@
-package io.github.mattshoe.shoebox.autobuilder.processor.generator
+package io.github.mattshoe.shoebox.autobuilder.processor.generator.function
 
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.squareup.kotlinpoet.ClassName
@@ -6,8 +6,9 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ksp.toTypeName
 import io.github.mattshoe.shoebox.autobuilder.processor.isNullable
 
-class FunctionCodeGenerator {
-    fun generatePropertyMutator(
+class FunctionCodeGeneratorImpl : FunctionCodeGenerator {
+
+    override fun generatePropertyMutatorFunction(
         property: KSPropertyDeclaration,
         packageDestination: String,
         builderClassName: String
@@ -20,12 +21,12 @@ class FunctionCodeGenerator {
             .build()
     }
 
-    fun generateBuildFunctionBuilder(packageDestination: String, className: String): FunSpec.Builder {
+    override fun generateBuildFunctionBuilder(packageDestination: String, className: String): FunSpec.Builder {
         return FunSpec.builder("build")
             .returns(ClassName(packageDestination, className))
     }
 
-    fun generateBuildFunction(
+    override fun generateBuildFunction(
         builder: FunSpec.Builder,
         constructorParams: MutableList<String>,
         packageDestination: String,

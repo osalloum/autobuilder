@@ -4,7 +4,7 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import io.github.mattshoe.shoebox.autobuilder.annotations.AutoBuilder
-import io.github.mattshoe.shoebox.autobuilder.processor.generator.BuilderClassCodeGenerator
+import io.github.mattshoe.shoebox.autobuilder.processor.generator.builderclass.BuilderClassCodeGenerator
 import io.github.mattshoe.shoebox.autobuilder.processor.io.FileWriter
 
 class AutoBuilderProcessor(
