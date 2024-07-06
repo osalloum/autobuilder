@@ -151,6 +151,11 @@ public class SimpleCaseWithDefaultsBuilder {
 Add the following dependencies to your `build.gradle.kts` file:
 
 ```kotlin
+plugins {
+    kotlin("jvm")
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21" // Use your judgment on version here
+}
+
 repositories {
     mavenCentral()
 }
