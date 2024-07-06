@@ -7,9 +7,247 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCompilerApi::class)
 class AutoBuilderProcessorTest {
+
+    @Test
+    fun `properties with incorrect default annotation reports error`() {
+        val kspCompileResult = compile(
+            SourceFile.kotlin(
+                "BorkedDefault.kt",
+                """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+    
+                @AutoBuilder
+                data class BorkedDefault(
+                    @DefaultString("how dare you")
+                    val bar: Int,
+                )
+            """
+            )
+        )
+
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, kspCompileResult.result.exitCode)
+        assertTrue {
+            kspCompileResult.result.messages.contains(
+                "Type mismatch -- Cannot annotate Int with DefaultString!"
+            )
+        }
+    }
+
+    @Test
+    fun `mix of defaulted and non-defaulted properties are formatted correctly`() {
+        assertBuilderOutput(
+            "MultiPropData",
+
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+    
+                @AutoBuilder
+                data class MultiPropData(
+                    @DefaultInt(42)
+                    val int: Int?,
+                    val bool: Boolean,
+                    @DefaultString("derp")
+                    val string: String?,
+                    val char: Char
+                )
+            """,
+
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.MultiPropData
+                import kotlin.Boolean
+                import kotlin.Char
+                import kotlin.Int
+                import kotlin.String
+                
+                public class MultiPropDataBuilder {
+                    private var int: Int? = 42
+                
+                    private var bool: Boolean = false
+                
+                    private var string: String? = "derp"
+                
+                    private var char: Char = '0'
+                
+                    public fun int(int: Int?): MultiPropDataBuilder {
+                        this.int = int
+                        return this
+                    }
+                
+                    public fun bool(bool: Boolean): MultiPropDataBuilder {
+                        this.bool = bool
+                        return this
+                    }
+                
+                    public fun string(string: String?): MultiPropDataBuilder {
+                        this.string = string
+                        return this
+                    }
+                
+                    public fun char(char: Char): MultiPropDataBuilder {
+                        this.char = char
+                        return this
+                    }
+                
+                    public fun build(): MultiPropData = MultiPropData(
+                        int,
+                        bool ?: throw IllegalStateException("bool must not be null!"),
+                        string,
+                        char ?: throw IllegalStateException("char must not be null!")
+                    )
+                }
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `multiple defaulted properties are formatted correctly`() {
+        assertBuilderOutput(
+            "MultiPropData",
+
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+    
+                @AutoBuilder
+                data class MultiPropData(
+                    @DefaultInt(42)
+                    val int: Int?,
+                    @DefaultBoolean(true)
+                    val bool: Boolean,
+                    @DefaultString("derp")
+                    val string: String?,
+                    @DefaultChar("w")
+                    val char: Char
+                )
+            """,
+
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.MultiPropData
+                import kotlin.Boolean
+                import kotlin.Char
+                import kotlin.Int
+                import kotlin.String
+                
+                public class MultiPropDataBuilder {
+                    private var int: Int? = 42
+                
+                    private var bool: Boolean = true
+                
+                    private var string: String? = "derp"
+                
+                    private var char: Char = 'w'
+                
+                    public fun int(int: Int?): MultiPropDataBuilder {
+                        this.int = int
+                        return this
+                    }
+                
+                    public fun bool(bool: Boolean): MultiPropDataBuilder {
+                        this.bool = bool
+                        return this
+                    }
+                
+                    public fun string(string: String?): MultiPropDataBuilder {
+                        this.string = string
+                        return this
+                    }
+                
+                    public fun char(char: Char): MultiPropDataBuilder {
+                        this.char = char
+                        return this
+                    }
+                
+                    public fun build(): MultiPropData = MultiPropData(
+                        int,
+                        bool ?: throw IllegalStateException("bool must not be null!"),
+                        string,
+                        char ?: throw IllegalStateException("char must not be null!")
+                    )
+                }
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `multiple non-defaulted properties are formatted correctly`() {
+        assertBuilderOutput(
+            "MultiPropData",
+
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+    
+                @AutoBuilder
+                data class MultiPropData(
+                    val int: Int?,
+                    val bool: Boolean,
+                    val string: String?,
+                    val char: Char
+                )
+            """,
+
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.MultiPropData
+                import kotlin.Boolean
+                import kotlin.Char
+                import kotlin.Int
+                import kotlin.String
+                
+                public class MultiPropDataBuilder {
+                    private var int: Int? = null
+                
+                    private var bool: Boolean = false
+                
+                    private var string: String? = null
+                
+                    private var char: Char = '0'
+                
+                    public fun int(int: Int?): MultiPropDataBuilder {
+                        this.int = int
+                        return this
+                    }
+                
+                    public fun bool(bool: Boolean): MultiPropDataBuilder {
+                        this.bool = bool
+                        return this
+                    }
+                
+                    public fun string(string: String?): MultiPropDataBuilder {
+                        this.string = string
+                        return this
+                    }
+                
+                    public fun char(char: Char): MultiPropDataBuilder {
+                        this.char = char
+                        return this
+                    }
+                
+                    public fun build(): MultiPropData = MultiPropData(
+                        int,
+                        bool ?: throw IllegalStateException("bool must not be null!"),
+                        string,
+                        char ?: throw IllegalStateException("char must not be null!")
+                    )
+                }
+        """.trimIndent()
+        )
+    }
 
 // region Integer tests
 
