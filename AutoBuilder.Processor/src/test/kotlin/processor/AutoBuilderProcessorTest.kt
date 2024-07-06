@@ -13,6 +13,165 @@ import kotlin.test.assertTrue
 class AutoBuilderProcessorTest {
 
     @Test
+    fun `WHEN non-primitiva property without default annotation THEN empty constructor is used`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+
+                data class OtherData(
+                    val data: Int
+                ) {
+                    constructor(): this(42)
+                }
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: OtherData,
+                )
+            """.trimIndent(),
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+
+                import io.github.mattshoe.shoebox.Foo
+                import io.github.mattshoe.shoebox.OtherData
+
+                public class FooBuilder {
+                    private var bar: OtherData = OtherData()
+
+                    public fun bar(bar: OtherData): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+
+                    public fun build(): Foo = Foo(
+                        bar ?: throw IllegalStateException("bar must not be null!")
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `WHEN Default annotation is used on a primitive property THEN compilation fails`() {
+        val kspCompileResult = compile(
+            SourceFile.kotlin(
+                "Foo.kt",
+                """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+    
+                @AutoBuilder
+                data class Foo(
+                    @Default(args = ["true"])
+                    val bar: Int,
+                )
+            """
+            )
+        )
+
+        assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, kspCompileResult.result.exitCode)
+        assertTrue {
+            kspCompileResult.result.messages.contains(
+                "Cannot use the @Default(..) annotation on a primitive type! Use the corresponding primitive annotation instead."
+            )
+        }
+    }
+
+    @Test
+    fun `WHEN non-primitiva property with default annotation supplies imports THEN imports are included`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+
+                data class OtherData(
+                    val data: Int
+                )
+    
+                @AutoBuilder
+                data class Foo(
+                    @Default(
+                        args = ["42"],
+                        imports = [
+                            "com.flerp.derp.Howdy",
+                            "io.will.it.work.or.Not"
+                        ]
+                    )
+                    val bar: OtherData,
+                )
+            """.trimIndent(),
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+
+                import com.flerp.derp.Howdy
+                import io.github.mattshoe.shoebox.Foo
+                import io.github.mattshoe.shoebox.OtherData
+                import io.will.it.work.or.Not
+
+                public class FooBuilder {
+                    private var bar: OtherData = OtherData(42)
+
+                    public fun bar(bar: OtherData): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+
+                    public fun build(): Foo = Foo(
+                        bar ?: throw IllegalStateException("bar must not be null!")
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `WHEN non-primitiva property with default annotation supplies args THEN args are substituted`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+
+                data class OtherData(
+                    val data: Int
+                )
+    
+                @AutoBuilder
+                data class Foo(
+                    @Default(["42"])
+                    val bar: OtherData,
+                )
+            """.trimIndent(),
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+
+                import io.github.mattshoe.shoebox.Foo
+                import io.github.mattshoe.shoebox.OtherData
+
+                public class FooBuilder {
+                    private var bar: OtherData = OtherData(42)
+
+                    public fun bar(bar: OtherData): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+
+                    public fun build(): Foo = Foo(
+                        bar ?: throw IllegalStateException("bar must not be null!")
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun `properties with incorrect default annotation reports error`() {
         val kspCompileResult = compile(
             SourceFile.kotlin(
@@ -502,8 +661,8 @@ class AutoBuilderProcessorTest {
                 inheritClassPath = true
                 symbolProcessorProviders = listOf(AutoBuilderProcessorProvider())
                 sources = sourceFiles.asList()
-                verbose = false
-                kspIncremental = true
+                verbose = true
+                kspIncremental = false
             }
 
     private fun findGeneratedFiles(compilation: KotlinCompilation): List<File> {

@@ -5,6 +5,8 @@ import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.*
 import io.github.mattshoe.shoebox.autobuilder.annotations.AutoBuilder
+import io.github.mattshoe.shoebox.autobuilder.io.github.mattshoe.shoebox.autobuilder.processor.property.ImportStatement
+import io.github.mattshoe.shoebox.autobuilder.io.github.mattshoe.shoebox.autobuilder.processor.property.PropertyReader
 
 class AutoBuilderProcessor(
     private val codeGenerator: CodeGenerator,
@@ -24,6 +26,7 @@ class AutoBuilderProcessor(
         val packageName = packageDestination(classDeclaration)
         val className = classDeclaration.simpleName.asString()
         val builderClassName = "${className}Builder"
+        val imports = mutableSetOf<ImportStatement>()
 
         val builderClass = TypeSpec.classBuilder(builderClassName)
             .addModifiers(KModifier.PUBLIC)
@@ -34,11 +37,13 @@ class AutoBuilderProcessor(
                 val paramList = mutableListOf<String>()
 
                 classDeclaration.getAllProperties().forEach { property ->
+                    val propertyDefinition = propertyReader.getDefaultValue(property, resolver)
+                    imports.addAll(propertyDefinition.imports)
                     addProperty(
                         PropertySpec.builder(property.simpleName.asString(), property.type.toTypeName().copy(nullable = property.isNullable))
                             .mutable(true)
                             .initializer(
-                                propertyReader.getDefaultValue(property, resolver)
+                                propertyDefinition.value
                             )
                             .addModifiers(KModifier.PRIVATE)
                             .build()
@@ -70,11 +75,17 @@ class AutoBuilderProcessor(
             }
             .build()
 
-        val fileSpec = FileSpec.builder(packageName, builderClassName)
-            .indent("    ")
-            .addType(builderClass)
-            .addImport(packageName = classDeclaration.packageName.asString(), className)
-            .build()
+        val fileSpec = FileSpec.builder(packageName, builderClassName).apply {
+            indent("    ")
+            addType(builderClass)
+            addImport(packageName = classDeclaration.packageName.asString(), className)
+            imports.forEach {
+                addImport(
+                    packageName = it.packageName,
+                    it.className
+                )
+            }
+        }.build()
 
         val file = codeGenerator.createNewFile(
             Dependencies(false, classDeclaration.containingFile!!),

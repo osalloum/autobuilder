@@ -3,6 +3,12 @@ package io.github.mattshoe.shoebox.autobuilder
 import io.github.mattshoe.shoebox.autobuilder.annotations.*
 import io.github.mattshoe.shoebox.autobuilder.autobuilder.FlerpyDooBuilder
 
+data class InnerFlerp(
+    val derp: String
+) {
+//    constructor(): this("derp")
+}
+
 
 @AutoBuilder
 data class FlerpyDoo(
@@ -23,6 +29,7 @@ data class FlerpyDoo(
     val short: Short,
     @DefaultString("wow!")
     val string: String,
+    val innerFlerp: InnerFlerp
 )
 
 
