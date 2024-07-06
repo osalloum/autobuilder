@@ -14,3 +14,5 @@ data class AllPrimitivesNonDefaultNonNull(
     val short: Short,
     val string: String,
 )
+
+

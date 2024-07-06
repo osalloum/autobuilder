@@ -157,7 +157,7 @@ class DefaultProviderImpl(
             resolver.builtIns.floatType ->  "0f"
             resolver.builtIns.doubleType ->  "0.0"
             resolver.builtIns.booleanType -> "false"
-            resolver.builtIns.charType -> "'0'"
+            resolver.builtIns.charType -> "'\\u0000'"
             resolver.builtIns.byteType -> "0"
             resolver.builtIns.shortType -> "0"
             resolver.builtIns.stringType -> "\"\""

@@ -235,7 +235,7 @@ class AutoBuilderProcessorTest {
                 
                     private var string: String? = "derp"
                 
-                    private var char: Char = '0'
+                    private var char: Char = '\u0000'
                 
                     public fun int(int: Int?): MultiPropDataBuilder {
                         this.int = int
@@ -375,7 +375,7 @@ class AutoBuilderProcessorTest {
                 
                     private var string: String? = null
                 
-                    private var char: Char = '0'
+                    private var char: Char = '\u0000'
                 
                     public fun int(int: Int?): MultiPropDataBuilder {
                         this.int = int
@@ -580,7 +580,7 @@ class AutoBuilderProcessorTest {
 
     @Test
     fun `WHEN non-null Char property with no annotated default THEN correct primitive system default is given`() {
-        nonNullPrimitiveTest("Char", "'0'")
+        nonNullPrimitiveTest("Char", "'\\u0000'")
     }
 
     @Test
