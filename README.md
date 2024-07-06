@@ -141,6 +141,8 @@ public class SimpleCaseWithDefaultsBuilder {
 }
 ```
 
+<br>
+
 ## Installation
 
 Add the following dependencies to your `build.gradle.kts` file:
