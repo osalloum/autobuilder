@@ -2,8 +2,6 @@
 
 `AutoBuilder` is a Kotlin Symbol Processing (KSP) library designed to automatically generate builder classes for your data classes. It simplifies the creation of complex objects and supports default values for both primitive and non-primitive properties.
 
-<br>
-
 ## Features
 
 - **Automatic Builder Generation**: Automatically generates builder classes for annotated data classes.
