@@ -2,10 +2,7 @@ package io.github.mattshoe.shoebox.autobuilder.annotations
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class AutoBuilder {
-}
-
-
+annotation class AutoBuilder
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.SOURCE)
@@ -42,3 +39,7 @@ annotation class DefaultShort(val value: Short)
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.SOURCE)
 annotation class DefaultString(val value: String)
+
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.SOURCE)
+annotation class Default(val args: Array<String>, val imports: Array<String>)

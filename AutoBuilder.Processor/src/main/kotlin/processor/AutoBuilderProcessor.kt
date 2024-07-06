@@ -16,7 +16,6 @@ class AutoBuilderProcessor(
         val symbols = resolver.getSymbolsWithAnnotation(AutoBuilder::class.qualifiedName!!)
         symbols.filterIsInstance<KSClassDeclaration>().forEach { classDeclaration ->
             generateBuilderClass(classDeclaration, resolver)
-            generateExtensionFunction(classDeclaration)
         }
         return emptyList()
     }
@@ -63,7 +62,7 @@ class AutoBuilderProcessor(
                 addFunction(
                     buildFunction
                         .addStatement(
-                            "return %T(\n${paramList.joinToString(",\n")}\n)",
+                            "return %T(\n    ${paramList.joinToString(",\n    ")}\n)",
                             ClassName(packageName, className)
                         )
                         .build()
@@ -72,6 +71,7 @@ class AutoBuilderProcessor(
             .build()
 
         val fileSpec = FileSpec.builder(packageName, builderClassName)
+            .indent("    ")
             .addType(builderClass)
             .addImport(packageName = classDeclaration.packageName.asString(), className)
             .build()
@@ -80,35 +80,6 @@ class AutoBuilderProcessor(
             Dependencies(false, classDeclaration.containingFile!!),
             packageName,
             builderClassName
-        )
-
-        file.bufferedWriter().use {
-            fileSpec.writeTo(it)
-        }
-    }
-
-    private fun generateExtensionFunction(classDeclaration: KSClassDeclaration) {
-        val packageName = packageDestination(classDeclaration)
-        val className = classDeclaration.simpleName.asString()
-        val builderClassName = "${className}Builder"
-        val classType = ClassName(packageName, className)
-        val builderType = ClassName(packageName, builderClassName)
-
-        val functionSpec = FunSpec.builder("builder")
-            .receiver(classType)
-            .returns(builderType)
-            .addStatement("return %T()", builderType)
-            .build()
-
-        val fileSpec = FileSpec.builder(packageName, "BuilderExtensions")
-            .addFunction(functionSpec)
-            .addImport(packageName = classDeclaration.packageName.asString(), className)
-            .build()
-
-        val file = codeGenerator.createNewFile(
-            Dependencies(false, classDeclaration.containingFile!!),
-            packageName,
-            "BuilderExtensions"
         )
 
         file.bufferedWriter().use {

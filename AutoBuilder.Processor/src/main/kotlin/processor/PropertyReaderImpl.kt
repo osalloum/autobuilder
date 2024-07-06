@@ -64,7 +64,7 @@ class PropertyReaderImpl(
         type: KSType,
         transform: (String) -> String = { it }
     ): String {
-        if (property.type.resolve() != type)
+        if (property.type.resolve().makeNotNullable() != type)
             logger.error("Type mismatch -- Cannot annotate ${property.type.resolve()} with ${annotation.shortName.asString()}!", annotation)
 
         return transform(annotation.arguments.first().value.toString())
