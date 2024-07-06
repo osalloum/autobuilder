@@ -14,7 +14,6 @@
 - Default values specified in the constructor are not currently supported due to KSP limitations. This feature will be implemented once support is available.
 
 <br>
-<br>
 
 ## Usage
 
