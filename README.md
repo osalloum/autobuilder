@@ -6,13 +6,15 @@
 
 - **Automatic Builder Generation**: Automatically generates builder classes for annotated data classes.
 - **Support for Primitive Types**: Handles all Kotlin primitive types, including nullable versions.
-- **Default Values**: Supports default values specified through annotations or in the constructor.
+- **Default Values**: Supports default values specified through annotations.
+  - Please note that any defaults specified in the constructor will not be respected, due to current limitations with KSP.
 - **Non-Primitive Properties**: Supports non-primitive properties with either a no-arg constructor or a `@Default` annotation for custom constructor arguments.
 
 ## Known Limitations
 
 - Defaulted constructor values are not currently respected due to KSP limitations. 
   - This feature will be implemented once KSP support is available.
+  - https://github.com/google/ksp/issues/1868
 
 <br>
 
