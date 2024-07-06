@@ -4,7 +4,7 @@ import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import io.github.mattshoe.shoebox.autobuilder.processor.generator.GeneratedBuilderFile
+import io.github.mattshoe.shoebox.autobuilder.processor.model.GeneratedBuilderFile
 
 class FileWriter(
     private val codeGenerator: CodeGenerator,

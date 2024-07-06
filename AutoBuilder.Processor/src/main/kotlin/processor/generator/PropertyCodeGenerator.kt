@@ -7,7 +7,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import io.github.mattshoe.shoebox.autobuilder.processor.model.PropertyData
 import io.github.mattshoe.shoebox.autobuilder.processor.isNullable
 
-class PropertyGenerator {
+class PropertyCodeGenerator {
     fun generatePropertyCodeFor(property: KSPropertyDeclaration, propertyData: PropertyData): PropertySpec {
         return PropertySpec.Companion.builder(
             property.simpleName.asString(),
