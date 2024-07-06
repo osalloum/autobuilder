@@ -15,3 +15,4 @@ fun main() {
 fun test(action: () -> Any) {
     println(action())
 }
+
