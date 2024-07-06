@@ -6,7 +6,7 @@ import io.github.mattshoe.shoebox.autobuilder.autobuilder.FlerpyDooBuilder
 data class InnerFlerp(
     val derp: String
 ) {
-//    constructor(): this("derp")
+    constructor(): this("derp")
 }
 
 

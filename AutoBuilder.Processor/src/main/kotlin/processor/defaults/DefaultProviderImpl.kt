@@ -1,4 +1,4 @@
-package io.github.mattshoe.shoebox.autobuilder.io.github.mattshoe.shoebox.autobuilder.processor.property
+package io.github.mattshoe.shoebox.autobuilder.processor.defaults
 
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -6,13 +6,15 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import io.github.mattshoe.shoebox.autobuilder.annotations.*
+import io.github.mattshoe.shoebox.autobuilder.processor.model.ImportStatement
+import io.github.mattshoe.shoebox.autobuilder.processor.model.PropertyData
 import io.github.mattshoe.shoebox.autobuilder.processor.qualifiedName
 
-class PropertyReaderImpl(
+class DefaultProviderImpl(
     private val logger: KSPLogger
-): PropertyReader {
+): DefaultProvider {
 
-    private val defaultAnnotations = mapOf<String, (KSAnnotation, KSPropertyDeclaration, Resolver) -> PropertyDefinition>(
+    private val defaultAnnotations = mapOf<String, (KSAnnotation, KSPropertyDeclaration, Resolver) -> PropertyData>(
         DefaultInt::class.qualifiedName!! to ::readIntDefault,
         DefaultLong::class.qualifiedName!! to ::readLongDefault,
         DefaultFloat::class.qualifiedName!! to ::readFloatDefault,
@@ -25,7 +27,7 @@ class PropertyReaderImpl(
         Default::class.qualifiedName!! to ::readNonPrimitiveDefaultAnnotation
     )
 
-    override fun getDefaultValue(property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    override fun defaultPropertyValue(property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
 
         return getDefaultedAnnotationAssignment(property, resolver)
             ?: getDefaultPropertyAssignment(property, resolver)
@@ -35,7 +37,7 @@ class PropertyReaderImpl(
         return type.resolve().isMarkedNullable
     }
 
-    private fun getDefaultedAnnotationAssignment(property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition? {
+    private fun getDefaultedAnnotationAssignment(property: KSPropertyDeclaration, resolver: Resolver): PropertyData? {
         return property.annotations.firstOrNull {
             it.qualifiedName in defaultAnnotations.keys
         }?.let {
@@ -43,8 +45,8 @@ class PropertyReaderImpl(
         }
     }
 
-    private fun getDefaultPropertyAssignment(property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
-        return PropertyDefinition(
+    private fun getDefaultPropertyAssignment(property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
+        return PropertyData(
             value = when {
                 property.isNullable() -> "null"
                 property.isPrimitive(resolver) -> getSystemDefaultPrimitives(property, resolver)
@@ -59,53 +61,53 @@ class PropertyReaderImpl(
         property: KSPropertyDeclaration,
         type: KSType,
         transform: (String) -> String = { it }
-    ): PropertyDefinition {
+    ): PropertyData {
         if (property.type.resolve().makeNotNullable() != type)
             logger.error("Type mismatch -- Cannot annotate ${property.type.resolve()} with ${annotation.shortName.asString()}!", annotation)
 
-        return PropertyDefinition(
+        return PropertyData(
             transform(annotation.arguments.first().value.toString()),
             emptyList()
         )
     }
 
-    private fun readIntDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readIntDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.intType)
     }
 
-    private fun readLongDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readLongDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.longType) { it + "L"}
     }
 
-    private fun readFloatDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readFloatDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.floatType) { it + "f"}
     }
 
-    private fun readDoubleDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readDoubleDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.doubleType)
     }
 
-    private fun readBooleanDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readBooleanDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.booleanType)
     }
 
-    private fun readCharDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readCharDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.charType) { "'$it'"}
     }
 
-    private fun readByteDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readByteDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.byteType)
     }
 
-    private fun readShortDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readShortDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.shortType)
     }
 
-    private fun readStringDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readStringDefault(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         return readPrimitiveDefaultAnnotation(annotation, property, resolver.builtIns.stringType) { "\"$it\""}
     }
 
-    private fun readNonPrimitiveDefaultAnnotation(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyDefinition {
+    private fun readNonPrimitiveDefaultAnnotation(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         if (property.isPrimitive(resolver))
             logger.error("Cannot use the @Default(..) annotation on a primitive type! Use the corresponding primitive annotation instead.", annotation)
 
@@ -115,7 +117,7 @@ class PropertyReaderImpl(
         val propertyType = property.type.resolve().declaration.simpleName.asString()
         val propertyAssignment = "$propertyType(${args.joinToString(",\n    ")})"
 
-        return PropertyDefinition(
+        return PropertyData(
             value = propertyAssignment,
             imports = imports.mapNotNull {
                 it.toImportStatement()
