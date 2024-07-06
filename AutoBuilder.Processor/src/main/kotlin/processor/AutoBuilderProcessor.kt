@@ -5,11 +5,12 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import io.github.mattshoe.shoebox.autobuilder.annotations.AutoBuilder
 import io.github.mattshoe.shoebox.autobuilder.processor.generator.BuilderCodeGenerator
+import io.github.mattshoe.shoebox.autobuilder.processor.io.FileWriter
 
 class AutoBuilderProcessor(
     private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger,
-    private val builderCodeGenerator: BuilderCodeGenerator
+    private val builderCodeGenerator: BuilderCodeGenerator,
+    private val fileWriter: FileWriter
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -21,17 +22,11 @@ class AutoBuilderProcessor(
     }
 
     private fun generateBuilderClass(classDeclaration: KSClassDeclaration, resolver: Resolver) {
-        val generatedBuilder = builderCodeGenerator.generateBuilderCodeFor(classDeclaration, resolver)
-
-        val file = codeGenerator.createNewFile(
-            Dependencies(false, classDeclaration.containingFile!!),
-            generatedBuilder.packageDestination,
-            generatedBuilder.builderClassName
+        fileWriter.newFile(
+            classDeclaration,
+            builderCodeGenerator.generateBuilderCodeFor(classDeclaration, resolver)
         )
-
-        file.bufferedWriter().use {
-            generatedBuilder.fileSpec.writeTo(it)
-        }
     }
-    
+
 }
+
