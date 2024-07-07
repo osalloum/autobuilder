@@ -66,7 +66,7 @@ class AutoBuilderProcessorTest {
     
                 @AutoBuilder
                 data class Foo(
-                    @Default(args = ["true"])
+                    @DefaultConstructor(args = ["true"])
                     val bar: Int,
                 )
             """
@@ -76,7 +76,7 @@ class AutoBuilderProcessorTest {
         assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, kspCompileResult.result.exitCode)
         assertTrue {
             kspCompileResult.result.messages.contains(
-                "Cannot use the @Default(..) annotation on a primitive type! Use the corresponding primitive annotation instead."
+                "Cannot use the @DefaultConstructor(..) annotation on a primitive type! Use the corresponding primitive annotation instead."
             )
         }
     }
@@ -96,7 +96,7 @@ class AutoBuilderProcessorTest {
     
                 @AutoBuilder
                 data class Foo(
-                    @Default(
+                    @DefaultConstructor(
                         args = ["42"],
                         imports = [
                             "com.flerp.derp.Howdy",
@@ -145,7 +145,7 @@ class AutoBuilderProcessorTest {
     
                 @AutoBuilder
                 data class Foo(
-                    @Default(["42"])
+                    @DefaultConstructor(["42"])
                     val bar: OtherData,
                 )
             """.trimIndent(),

@@ -52,4 +52,4 @@ annotation class DefaultString(val value: String)
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.SOURCE)
-annotation class Default(val args: Array<String>, val imports: Array<String> = [])
+annotation class DefaultConstructor(val args: Array<String>, val imports: Array<String> = [])

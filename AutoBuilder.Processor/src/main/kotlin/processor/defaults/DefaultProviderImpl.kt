@@ -24,7 +24,7 @@ class DefaultProviderImpl(
         DefaultByte::class.qualifiedName!! to ::readByteDefault,
         DefaultShort::class.qualifiedName!! to ::readShortDefault,
         DefaultString::class.qualifiedName!! to ::readStringDefault,
-        Default::class.qualifiedName!! to ::readNonPrimitiveDefaultAnnotation
+        DefaultConstructor::class.qualifiedName!! to ::readNonPrimitiveDefaultAnnotation
     )
 
     override fun defaultPropertyValue(property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
@@ -109,7 +109,7 @@ class DefaultProviderImpl(
 
     private fun readNonPrimitiveDefaultAnnotation(annotation: KSAnnotation, property: KSPropertyDeclaration, resolver: Resolver): PropertyData {
         if (property.isPrimitive(resolver))
-            logger.error("Cannot use the @Default(..) annotation on a primitive type! Use the corresponding primitive annotation instead.", annotation)
+            logger.error("Cannot use the @DefaultConstructor(..) annotation on a primitive type! Use the corresponding primitive annotation instead.", annotation)
 
         val args =  annotation.arguments.find { it.name?.asString() == "args" }?.value as ArrayList<String>
         val imports = annotation.arguments.find { it.name?.asString() == "imports" }?.value  as ArrayList<String>

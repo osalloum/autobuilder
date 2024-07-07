@@ -84,7 +84,7 @@ import io.github.mattshoe.shoebox.autobuilder.annotations.*
 
 @AutoBuilder
 data class Foo(
-    @Default(args = ["42", "\"bar\""])
+    @DefaultConstructor(args = ["42", "\"bar\""])
     val customObject: SomeObject
 )
 
@@ -103,7 +103,7 @@ import io.github.mattshoe.shoebox.autobuilder.annotations.*
 
 @AutoBuilder
 data class Foo(
-    @Default(args = ["SomeObject(42)"], imports = [ "io.github.mattshoe.shoebox.SomeObject"])
+    @DefaultConstructor(args = ["SomeObject(42)"], imports = [ "io.github.mattshoe.shoebox.SomeObject"])
     val customObject: SomeObject
 )
 
@@ -170,7 +170,7 @@ dependencies {
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on GitHub.
+Contributions are always welcome!<br>Feel free to open an issue or submit a pull request on GitHub!
 
 
 ## Acknowledgements
