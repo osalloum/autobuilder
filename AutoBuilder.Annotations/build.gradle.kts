@@ -93,5 +93,5 @@ tasks.register<Zip>("generateZip") {
         PublishToMavenRepository::class.java
     )
     from(publishTask.map { it.repository.url })
-    archiveFileName.set("autobuilder-annotations.zip")
+    archiveFileName.set("autobuilder-annotations_${VERSION}.zip")
 }
