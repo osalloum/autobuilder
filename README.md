@@ -1,14 +1,14 @@
 # AutoBuilder
 
-`AutoBuilder` is a Kotlin Symbol Processing (KSP) library designed to automatically generate builder classes for your data classes. It simplifies the creation of complex objects and supports default values for both primitive and non-primitive properties.
+`AutoBuilder` is a Kotlin Symbol Processing (KSP) library designed to automatically generate builder classes for your data classes. 
+It simplifies the creation of complex objects and supports default values for both primitive and non-primitive properties.
 
 ## Features
 
 - **Automatic Builder Generation**: Automatically generates builder classes for annotated data classes.
-- **Support for Primitive Types**: Handles all Kotlin primitive types, including nullable versions.
-- **Default Values**: Supports default values specified through annotations.
-  - Please note that any defaults specified in the constructor will not be respected, due to current limitations with KSP.
-- **Non-Primitive Properties**: Supports non-primitive properties with either a no-arg constructor or a `@Default` annotation for custom constructor arguments.
+- **Support for Primitive Properties**: Handles all Kotlin primitive types, including nullable versions.
+- **Support for Complex Object Properties**: Supports non-primitive properties via either a no-arg constructor or the `@DefaultConstructor` annotation to specify constructor arguments.
+- **Custom Default Values**: Supports custom default values specified through annotations.
 
 ## Known Limitations
 
@@ -24,7 +24,8 @@
 
 - `@AutoBuilder`: Annotate your data class with `@AutoBuilder` to generate a builder for that class.
 - `@DefaultInt`, `@DefaultString`, `@DefaultXX` etc.: Use these annotations to specify default values for primitive properties.
-- `@Default`: Use this annotation to specify default values for non-primitive properties using constructor arguments.
+- `@DefaultConstructor`: Use this annotation to specify default values for complex objects that require constructor arguments. 
+  - Note that `@DefaultConstructor` is optional if the target property's type has a no-arg constructor.
 
 ### Examples
 
