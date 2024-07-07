@@ -27,6 +27,28 @@ It simplifies the creation of complex objects and supports default values for bo
 - `@DefaultConstructor`: Use this annotation to specify default values for complex objects that require constructor arguments. 
   - Note that `@DefaultConstructor` is optional if the target property's type has a no-arg constructor.
 
+### Defining Builder Default Values
+
+- Nullable properties will always be defaulted to `null`. *(unless a `@Default` annotation is supplied)*
+- Primitive types will be defaulted as follows: *(unless a `@Default` annotation is supplied)*
+  - **Byte**: `0`
+  - **Short**: `0`
+  - **Int**: `0`
+  - **Long**: `0L`
+  - **Float**: `0.0f`
+  - **Double**: `0.0`
+  - **Char**: `'\u0000'` (the null character)
+  - **Boolean**: `false`
+  - **String**: `"""`
+- Non-Primitive types can only be automatically defaulted in 2 scenarios:
+  - The target property type has a no-arg constructor
+  - The target property is nullable
+- If a Non-Primitive property requires a constructor, then you must use the `@DefaultConstructor` annotation:
+  - The first argument is the textual representation of whatever arguments need passed
+    - `@DefaultConstructor(args=["42", "false", "\"foo\""])`
+  - The second argument allows you to specify an imports that may be required in order to construct an object:
+    - `@DefaultConstructor(args=["FooBar(42)"], imports=["com.foo.bar.FooBar"g])`
+
 ### Examples
 
 #### Data Class with Primitive Properties
