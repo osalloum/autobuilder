@@ -22,12 +22,15 @@ It simplifies the creation of complex objects and supports default values for bo
 
 ### Annotations
 
-- `@AutoBuilder`: Annotate your data class with `@AutoBuilder` to generate a builder for that class.
-- `@DefaultInt`, `@DefaultString`, `@DefaultXX` etc.: Use these annotations to specify default values for primitive properties.
-- `@DefaultConstructor`: Use this annotation to specify default values for complex objects that require constructor arguments. 
+- `@AutoBuilder`
+  - Annotate your data class with `@AutoBuilder` to generate a builder for that class.
+- `@DefaultInt`, `@DefaultString`, `@DefaultBoolean`, ...
+  - Use these annotations to specify default values for primitive properties.
+- `@DefaultConstructor`
+  - Use this to specify default arguments for constructors. 
   - Optional if the target property's type has a no-arg constructor or is nullable.
-  - If a property requires a constructor, then you must use the `@DefaultConstructor` annotation:
-  - The first argument is the textual representation of whatever arguments need passed
+  - If a property requires a constructor, then you **MUST** use the `@DefaultConstructor` annotation
+  - The first argument is the textual representation of all arguments to be passed to the constructor
     - `@DefaultConstructor(args=["42", "false", "\"something\""])`
   - The second argument allows you to specify any imports that are required in order to construct an object:
     - `@DefaultConstructor(args=["FooBar(42)"], imports=["com.foo.bar.FooBar"])`
@@ -38,7 +41,7 @@ It simplifies the creation of complex objects and supports default values for bo
 - **`@Default` Annotated Properties:**
   - Always takes priority over automatic defaults
 - **Nullable Properties:**
-  - Always defaulted to `null` 
+  - Defaulted to `null` 
 - **Primitive Properties** 
   - Byte: `0`
   - Short: `0`
@@ -50,9 +53,9 @@ It simplifies the creation of complex objects and supports default values for bo
   - Boolean: `false`
   - String: `""`
 - **Non-Primitive Properties:**
-  - `@DefaultConstructor` annotation
-  - `null` if property is nullable
-  - No-Arg constructor if available
+  - Defaults to constructor args specified by `@DefaultConstructor` if annotated
+  - Defaults to `null` if property is nullable
+  - Defaults to No-Arg constructor if available
 
 
 ### Examples
