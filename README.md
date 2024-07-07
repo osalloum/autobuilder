@@ -162,7 +162,7 @@ repositories {
 
 dependencies {
     ksp("io.github.mattshoe.shoebox.autobuilder:AutoBuilder.Processor:1.1.0")
-    implementation("io.github.mattshoe.shoebox.autobuilder:AutoBuilder.Annotations:1.1.0")
+    compileOnly("io.github.mattshoe.shoebox.autobuilder:AutoBuilder.Annotations:1.1.0")
 }
 ```
 
