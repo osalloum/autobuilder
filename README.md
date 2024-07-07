@@ -39,7 +39,7 @@ It simplifies the creation of complex objects and supports default values for bo
   - **Double**: `0.0`
   - **Char**: `'\u0000'` (the null character)
   - **Boolean**: `false`
-  - **String**: `"""`
+  - **String**: `""`
 - Non-Primitive types can only be automatically defaulted in 2 scenarios:
   - The target property type has a no-arg constructor
   - The target property is nullable
