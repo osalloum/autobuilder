@@ -1,8 +1,12 @@
-package io.github.mattshoe.shoebox.autobuilder.processor.generator.builderclass
+package io.github.mattshoe.shoebox.autobuilder.processor
 
+import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.KSVisitorVoid
+import com.google.devtools.ksp.visitor.KSTopDownVisitor
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -10,41 +14,54 @@ import com.squareup.kotlinpoet.TypeSpec
 import io.github.mattshoe.shoebox.autobuilder.processor.defaults.DefaultProvider
 import io.github.mattshoe.shoebox.autobuilder.processor.generator.function.FunctionCodeGenerator
 import io.github.mattshoe.shoebox.autobuilder.processor.generator.property.PropertyCodeGenerator
-import io.github.mattshoe.shoebox.autobuilder.processor.isNullable
-import io.github.mattshoe.shoebox.autobuilder.processor.model.GeneratedBuilderFile
 import io.github.mattshoe.shoebox.autobuilder.processor.model.ImportStatement
+import io.github.mattshoe.shoebox.stratify.model.GeneratedFile
+import io.github.mattshoe.shoebox.stratify.processor.Processor
 
-class BuilderClassCodeGeneratorImpl(
-    private val defaultProvider: DefaultProvider,
+class AutoBuilderClassProcessor(
+    private val resolver: Resolver,
     private val propertyCodeGenerator: PropertyCodeGenerator,
-    private val functionCodeGenerator: FunctionCodeGenerator
-) : BuilderClassCodeGenerator {
-    override fun generateBuilderCodeFor(classDeclaration: KSClassDeclaration, resolver: Resolver): GeneratedBuilderFile {
-        val packageDestination = packageDestination(classDeclaration)
-        val classBeingBuilt = classDeclaration.simpleName.asString()
+    private val functionCodeGenerator: FunctionCodeGenerator,
+    private val defaultProvider: DefaultProvider,
+    private val logger: KSPLogger
+): Processor<KSClassDeclaration> {
+    override val targetClass = KSClassDeclaration::class
+
+    inner class Visitor: KSVisitorVoid() {
+        override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit) {
+            super.visitFunctionDeclaration(function, data)
+        }
+    }
+
+    override suspend fun process(node: KSClassDeclaration): Set<GeneratedFile> {
+        val packageDestination = packageDestination(node)
+        val classBeingBuilt = node.simpleName.asString()
         val builderClassName = "${classBeingBuilt}Builder"
         val builderImports = mutableSetOf<ImportStatement>()
+
+        logger.warn("Processing $classBeingBuilt")
 
         val builderClass = generateBuilderClass(
             builderClassName,
             packageDestination,
             classBeingBuilt,
-            classDeclaration,
+            node,
             resolver,
             builderImports
         )
 
-        return GeneratedBuilderFile(
-            packageDestination,
-            classBeingBuilt,
-            builderClassName,
-            generateFileSpec(
-                classDeclaration,
-                packageDestination,
-                classBeingBuilt,
-                builderClassName,
-                builderClass,
-                builderImports
+        return setOf(
+            GeneratedFile(
+                fileName = builderClassName,
+                packageName = packageDestination,
+                output = generateFileSpec(
+                    node,
+                    packageDestination,
+                    classBeingBuilt,
+                    builderClassName,
+                    builderClass,
+                    builderImports
+                ).toString()
             )
         )
     }
@@ -163,4 +180,5 @@ class BuilderClassCodeGeneratorImpl(
     }
 
     private fun packageDestination(classDeclaration: KSClassDeclaration) = "${classDeclaration.packageName.asString()}.autobuilder"
+
 }

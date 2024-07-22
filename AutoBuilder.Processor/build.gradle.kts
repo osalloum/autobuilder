@@ -13,6 +13,7 @@ group = GROUP_ID
 version = VERSION
 
 repositories {
+    mavenLocal()
     mavenCentral()
     google()
 }
@@ -22,7 +23,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.squareup:kotlinpoet:1.17.0")
     implementation("com.squareup:kotlinpoet-ksp:1.17.0")
-    implementation("com.google.devtools.ksp:symbol-processing-api:2.0.0-1.0.21")
+    implementation("io.github.mattshoe.shoebox:Stratify:1.1.0-beta1")
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")

@@ -11,6 +11,7 @@ interface FunctionCodeGenerator {
     ): FunSpec
 
     fun generateBuildFunctionBuilder(packageDestination: String, className: String): FunSpec.Builder
+
     fun generateBuildFunction(
         builder: FunSpec.Builder,
         constructorParams: MutableList<String>,

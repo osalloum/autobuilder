@@ -1,38 +1,33 @@
 package io.github.mattshoe.shoebox.autobuilder.processor
 
-import com.google.devtools.ksp.processing.*
-import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.symbol.KSNode
 import io.github.mattshoe.shoebox.autobuilder.annotations.AutoBuilder
-import io.github.mattshoe.shoebox.autobuilder.processor.generator.builderclass.BuilderClassCodeGenerator
-import io.github.mattshoe.shoebox.autobuilder.processor.io.FileWriter
+import io.github.mattshoe.shoebox.autobuilder.processor.defaults.DefaultProviderImpl
+import io.github.mattshoe.shoebox.autobuilder.processor.generator.function.FunctionCodeGeneratorImpl
+import io.github.mattshoe.shoebox.autobuilder.processor.generator.property.PropertyCodeGeneratorImpl
+import io.github.mattshoe.shoebox.stratify.StratifySymbolProcessor
+import io.github.mattshoe.shoebox.stratify.strategy.AnnotationStrategy
+import io.github.mattshoe.shoebox.stratify.strategy.Strategy
 
 class AutoBuilderProcessor(
-    private val builderClassCodeGenerator: BuilderClassCodeGenerator,
-    private val fileWriter: FileWriter
-) : SymbolProcessor {
+    environment: SymbolProcessorEnvironment
+): StratifySymbolProcessor(
+    environment
+) {
 
-    override fun process(resolver: Resolver): List<KSAnnotated> {
-        processAllAutoBuilderSymbols(resolver)
-
-        return emptyList() // We don't need to postpone any processing, we have no dependencies.
-    }
-
-    private fun processAllAutoBuilderSymbols(resolver: Resolver) {
-        resolver
-            .getSymbolsWithAnnotation(AutoBuilder::class.qualifiedName!!)
-            .filterIsInstance<KSClassDeclaration>()
-            .forEach { classDeclaration ->
-                generateBuilderClass(classDeclaration, resolver)
-            }
-    }
-
-    private fun generateBuilderClass(classDeclaration: KSClassDeclaration, resolver: Resolver) {
-        fileWriter.newFile(
-            classDeclaration,
-            builderClassCodeGenerator.generateBuilderCodeFor(classDeclaration, resolver)
+    override suspend fun buildStrategies(resolver: Resolver): List<Strategy<KSNode, out KSNode>>  = listOf(
+        AnnotationStrategy(
+            AutoBuilder::class,
+            AutoBuilderClassProcessor(
+                resolver,
+                PropertyCodeGeneratorImpl(),
+                FunctionCodeGeneratorImpl(),
+                DefaultProviderImpl(environment.logger),
+                environment.logger
+            )
         )
-    }
-
+    )
 }
 
