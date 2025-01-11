@@ -5,6 +5,7 @@ import io.github.mattshoe.shoebox.autobuilder.processor.AutoBuilderProcessorProv
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.Test
 import java.io.File
+import kotlin.collections.flatten
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -624,6 +625,19 @@ class AutoBuilderProcessorTest {
 
 // endregion
 
+// region List/Map tests
+
+    @Test
+    fun `WHEN non-null List of strings property with no annotated default THEN correct mutableList is given`() {
+        nonNullGenericTest("List", listOf("String"), "mutableListOf()")
+    }
+
+
+    @Test
+    fun `WHEN non-null Map of String,Int property with no annotated default THEN correct mutableList is given`() {
+        nonNullGenericTest("Map", listOf("String", "Int"), "mutableMapOf()")
+    }
+
 // region BOILERPLATE
 
     private fun assertBuilderOutput(
@@ -640,7 +654,8 @@ class AutoBuilderProcessorTest {
 
         assertEquals(KotlinCompilation.ExitCode.OK, kspCompileResult.result.exitCode)
 
-        val generatedBuilderFile = kspCompileResult.generatedFiles.firstOrNull { it.name == "${className}Builder.kt" }
+        val generatedBuilderFile =
+            kspCompileResult.generatedFiles.firstOrNull { it.name == "${className}Builder.kt" }
 
         assertNotNull(generatedBuilderFile)
         assertEquals(expectedOutput, generatedBuilderFile.readText().trimIndent())
@@ -832,6 +847,58 @@ class AutoBuilderProcessorTest {
                         this.bar = bar
                         return this
                     }
+                
+                    public fun build(): Foo = Foo(
+                        bar ?: throw IllegalStateException("bar must not be null!")
+                    )
+                }
+        """.trimIndent()
+        )
+    }
+
+
+    private fun nonNullGenericTest(
+        collectionType: String,
+        genericTypes: List<String>,
+        value: String
+    ) {
+
+        val genericTypeString = genericTypes.joinToString(", ")
+        val importSet = mutableSetOf<String>()
+        for (type in genericTypes.reversed()) {
+            importSet.add("                import kotlin.$type")
+        }
+        val genericImports = importSet.joinToString("\n")
+        assertBuilderOutput(
+            "Foo",
+
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: $collectionType<$genericTypeString>,
+                )
+            """,
+
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.Foo
+$genericImports
+                import kotlin.collections.$collectionType
+                
+                public class FooBuilder {
+                    private var bar: $collectionType<$genericTypeString> = $value
+                
+                    public fun bar(bar: $collectionType<$genericTypeString>): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+
+                    public fun bar(): $collectionType<$genericTypeString> = this.bar
                 
                     public fun build(): Foo = Foo(
                         bar ?: throw IllegalStateException("bar must not be null!")

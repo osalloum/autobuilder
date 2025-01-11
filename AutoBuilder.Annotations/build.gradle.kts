@@ -43,7 +43,7 @@ publishing {
             pom {
                 name = "AutoBuilder.Annotations"
                 description = "AutoBuilder: A Kotlin Symbol Processing (KSP) library for automatic builder class generation. Supports default values for both primitive and non-primitive properties."
-                url = "https://github.com/mattshoe/autobuilder"
+                url = "https://github.com/osalloum/autobuilder"
                 properties = mapOf(
                     "myProp" to "value"
                 )
@@ -57,15 +57,15 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = "mattshoe"
-                        name = "Matthew Shoemaker"
-                        email = "mattshoe81@gmail.com"
+                        id = "osalloum"
+                        name = "Omar Salloum"
+                        email = "eyelet.taros28@icloud.com"
                     }
                 }
                 scm {
-                    connection = "scm:git:git@github.com:mattshoe/autobuilder.git"
-                    developerConnection = "scm:git:git@github.com:mattshoe/autobuilder.git"
-                    url = "https://github.com/mattshoe/autobuilder"
+                    connection = "scm:git:git@github.com:osalloum/autobuilder.git"
+                    developerConnection = "scm:git:git@github.com:osalloum/autobuilder.git"
+                    url = "https://github.com/osalloum/autobuilder"
                 }
             }
         }

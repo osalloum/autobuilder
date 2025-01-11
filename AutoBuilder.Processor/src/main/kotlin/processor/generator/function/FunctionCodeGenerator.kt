@@ -10,6 +10,12 @@ interface FunctionCodeGenerator {
         builderClassName: String
     ): FunSpec
 
+    fun generatePropertyGetterFunction(
+        property: KSPropertyDeclaration,
+        packageDestination: String,
+        builderClassName: String
+    ): FunSpec?
+
     fun generateBuildFunctionBuilder(packageDestination: String, className: String): FunSpec.Builder
 
     fun generateBuildFunction(

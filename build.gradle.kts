@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.0.0"
 }
 
-group = "io.github.mattshoe.shoebox.autobuilder"
+group = "io.github.osalloum.autobuilder"
 version = "1.0-SNAPSHOT"
 
 repositories {

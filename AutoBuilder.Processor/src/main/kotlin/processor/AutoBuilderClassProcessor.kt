@@ -126,6 +126,7 @@ class AutoBuilderClassProcessor(
     ) {
         addBuilderProperty(property,resolver, builderImports)
         addBuilderFunction(property, packageDestination, builderClassName)
+        addGetterFunctionForCollections(property, packageDestination, builderClassName)
     }
 
     private fun TypeSpec.Builder.addBuilderProperty(
@@ -153,6 +154,20 @@ class AutoBuilderClassProcessor(
                 builderClassName
             )
         )
+    }
+
+    private fun TypeSpec.Builder.addGetterFunctionForCollections(
+        property: KSPropertyDeclaration,
+        packageDestination: String,
+        builderClassName: String
+    ) {
+        functionCodeGenerator.generatePropertyGetterFunction(
+            property,
+            packageDestination,
+            builderClassName
+        ).let {
+            if (it != null) addFunction(it)
+        }
     }
 
     private fun TypeSpec.Builder.generateBuildFunction(
