@@ -1,4 +1,7 @@
 # Forked from [mattshoe/AutoBuilder]
+
+Releases on JitPack https://jitpack.io/#osalloum/autobuilder
+
 # AutoBuilder
 
 `AutoBuilder` is a Kotlin Symbol Processing (KSP) library designed to automatically generate builder classes for your data classes. 
