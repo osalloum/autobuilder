@@ -638,6 +638,234 @@ class AutoBuilderProcessorTest {
         nonNullGenericTest("Map", listOf("String", "Int"), "mutableMapOf()")
     }
 
+// endregion
+
+
+// region java.time
+    @Test
+    fun `WHEN non-null Instant property with no annotated default THEN default is Instant_now`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+                import java.time.Instant
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: Instant,
+                )
+            """,
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.Foo
+                import java.time.Instant
+                
+                public class FooBuilder {
+                    private var bar: Instant = Instant.now()
+                
+                    public fun bar(bar: Instant): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+                
+                    public fun build(): Foo = Foo(
+                        bar ?: throw IllegalStateException("bar must not be null!")
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `WHEN nullable Instant property with no annotated default THEN builder property defaults to null`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+                import java.time.Instant
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: Instant?,
+                )
+            """,
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.Foo
+                import java.time.Instant
+                
+                public class FooBuilder {
+                    private var bar: Instant? = null
+                
+                    public fun bar(bar: Instant?): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+                
+                    public fun build(): Foo = Foo(
+                        bar
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `WHEN non-null LocalDate property with no annotated default THEN default is LocalDate_now`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+                import java.time.LocalDate
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: LocalDate,
+                )
+            """,
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.Foo
+                import java.time.LocalDate
+                
+                public class FooBuilder {
+                    private var bar: LocalDate = LocalDate.now()
+                
+                    public fun bar(bar: LocalDate): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+                
+                    public fun build(): Foo = Foo(
+                        bar ?: throw IllegalStateException("bar must not be null!")
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `WHEN nullable LocalDate property with no annotated default THEN builder property defaults to null`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+                import java.time.LocalDate
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: LocalDate?,
+                )
+            """,
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.Foo
+                import java.time.LocalDate
+                
+                public class FooBuilder {
+                    private var bar: LocalDate? = null
+                
+                    public fun bar(bar: LocalDate?): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+                
+                    public fun build(): Foo = Foo(
+                        bar
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `WHEN non-null LocalDateTime property with no annotated default THEN default is LocalDateTime_now`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+                import java.time.LocalDateTime
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: LocalDateTime,
+                )
+            """,
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.Foo
+                import java.time.LocalDateTime
+                
+                public class FooBuilder {
+                    private var bar: LocalDateTime = LocalDateTime.now()
+                
+                    public fun bar(bar: LocalDateTime): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+                
+                    public fun build(): Foo = Foo(
+                        bar ?: throw IllegalStateException("bar must not be null!")
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `WHEN nullable LocalDateTime property with no annotated default THEN builder property defaults to null`() {
+        assertBuilderOutput(
+            "Foo",
+            """
+                package io.github.mattshoe.shoebox
+    
+                import io.github.mattshoe.shoebox.autobuilder.annotations.*
+                import java.time.LocalDateTime
+    
+                @AutoBuilder
+                data class Foo(
+                    val bar: LocalDateTime?,
+                )
+            """,
+            """
+                package io.github.mattshoe.shoebox.autobuilder
+                
+                import io.github.mattshoe.shoebox.Foo
+                import java.time.LocalDateTime
+                
+                public class FooBuilder {
+                    private var bar: LocalDateTime? = null
+                
+                    public fun bar(bar: LocalDateTime?): FooBuilder {
+                        this.bar = bar
+                        return this
+                    }
+                
+                    public fun build(): Foo = Foo(
+                        bar
+                    )
+                }
+            """.trimIndent()
+        )
+    }
+
+// endregion
+
 // region BOILERPLATE
 
     private fun assertBuilderOutput(
